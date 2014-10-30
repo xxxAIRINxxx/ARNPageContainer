@@ -22,6 +22,7 @@ CGFloat const ARNPageContainerTopBarDefaultHeight = 44.0f;
 @property (nonatomic, weak) UIScrollView *observingScrollView;
 @property (nonatomic, assign) BOOL shouldObserveContentOffset;
 
+@property (nonatomic, strong) NSLayoutConstraint *topConstraint;
 @property (nonatomic, strong) NSLayoutConstraint *topBarHeightConstraint;
 
 @property (nonatomic, strong) NSMutableArray *viewControllers;
@@ -50,9 +51,9 @@ CGFloat const ARNPageContainerTopBarDefaultHeight = 44.0f;
     
     [self.view addSubview:self.topBarLayerView];
     
-    [ARNPageContainerLayout pinParentView:self.view subView:self.topBarLayerView toEdge:NSLayoutAttributeTop];
     [ARNPageContainerLayout pinParentView:self.view subView:self.topBarLayerView toEdge:NSLayoutAttributeLeft];
     [ARNPageContainerLayout pinParentView:self.view subView:self.topBarLayerView toEdge:NSLayoutAttributeRight];
+    self.topConstraint = [ARNPageContainerLayout pinParentView:self.view subView:self.topBarLayerView toEdge:NSLayoutAttributeTop];
     self.topBarHeightConstraint = [ARNPageContainerLayout addConstraintView:self.topBarLayerView
                                                                      toEdge:NSLayoutAttributeHeight
                                                                    constant:ARNPageContainerTopBarDefaultHeight];
@@ -67,6 +68,7 @@ CGFloat const ARNPageContainerTopBarDefaultHeight = 44.0f;
     layout.minimumLineSpacing = 0;
     layout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
     self.collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:layout];
+    self.collectionView.backgroundColor = [UIColor clearColor];
     self.collectionView.dataSource = self;
     self.collectionView.delegate   = self;
     
@@ -167,7 +169,7 @@ CGFloat const ARNPageContainerTopBarDefaultHeight = 44.0f;
     [ARNPageContainerLayout allPinParentView:self.topBarLayerView subView:topBarView];
 }
 
-- (void)addVC:(UIViewController *)controller
+- (void)addControler:(UIViewController *)controller
 {
     NSUUID *uuid = [NSUUID UUID];
     NSString *uuidString = uuid.UUIDString;
@@ -175,7 +177,23 @@ CGFloat const ARNPageContainerTopBarDefaultHeight = 44.0f;
     [self.viewControllers addObject:@{uuidString : controller}];
     
     [self.collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:uuidString];
+}
+
+- (void)addVCs:(NSArray *)controllers
+{
+    if (!controllers || !controllers.count) { return; }
     
+    for (NSUInteger i = 0; i < controllers.count; ++i) {
+        UIViewController *controller = controllers[i];
+        [self addControler:controller];
+    }
+    
+    [self.collectionView reloadData];
+}
+
+- (void)addVC:(UIViewController *)controller
+{
+    [self addControler:controller];
     [self.collectionView reloadData];
 }
 
@@ -251,6 +269,18 @@ CGFloat const ARNPageContainerTopBarDefaultHeight = 44.0f;
 - (void)setSelectedIndex:(NSUInteger)selectedIndex
 {
     [self setSelectedIndex:selectedIndex animated:NO];
+}
+
+- (CGFloat)topMargin
+{
+    return self.topConstraint.constant;
+}
+
+- (void)setTopMargin:(CGFloat)topMargin
+{
+    self.topConstraint.constant = topMargin;
+    
+    [self.view setNeedsUpdateConstraints];
 }
 
 // ------------------------------------------------------------------------------------------------------------------//

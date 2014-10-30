@@ -17,12 +17,14 @@
 @property (nonatomic, strong) UICollectionView *collectionView;
 
 @property (nonatomic, assign) NSUInteger selectedIndex;
+@property (nonatomic, assign) CGFloat topMargin;
 @property (nonatomic, assign) CGFloat topBarHeight;
 
 - (void)setParentVC:(UIViewController *)controller;
 
 - (void)setTopBarView:(UIView *)topBarView;
 
+- (void)addVCs:(NSArray *)controllers;
 - (void)addVC:(UIViewController *)controller;
 
 - (void)setSelectedIndex:(NSUInteger)selectedIndex animated:(BOOL)animated;
