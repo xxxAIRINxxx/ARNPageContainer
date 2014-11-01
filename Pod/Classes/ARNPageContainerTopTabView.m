@@ -20,6 +20,7 @@ CGFloat const ARNPageContainerTopTabViewItemMargin = 30.0f;
 @interface ARNPageContainerTopTabView ()
 
 @property (nonatomic, strong, readwrite) UIScrollView *scrollView;
+@property (nonatomic, assign, readwrite) NSUInteger selectedIndex;
 
 @property (nonatomic, strong) NSArray *itemViews;
 @property (nonatomic, strong) UIImageView *backgroundImageView;
@@ -32,6 +33,7 @@ CGFloat const ARNPageContainerTopTabViewItemMargin = 30.0f;
 {
     [self settingScrollView];
     
+    self.selectedIndex = 0;
     self.font = [UIFont systemFontOfSize:14];
     self.itemTitleColor = [UIColor lightGrayColor];
     self.pageItemsTitleColor = [UIColor lightGrayColor];
@@ -98,14 +100,6 @@ CGFloat const ARNPageContainerTopTabViewItemMargin = 30.0f;
     }
 }
 
-// ------------------------------------------------------------------------------------------------------------------//
-#pragma mark - Getter,  Setter
-
-- (void)setBackgroundImage:(UIImage *)backgroundImage
-{
-    self.backgroundImageView.image = backgroundImage;
-}
-
 - (void)setItemTitles:(NSArray *)itemTitles
 {
     if (self.itemViews) {
@@ -120,7 +114,17 @@ CGFloat const ARNPageContainerTopTabViewItemMargin = 30.0f;
     }
     self.itemViews = [NSArray arrayWithArray:mutableItemViews];
     
+    [self resetButtonTitleColor];
+    
     [self layoutItemViews];
+}
+
+// ------------------------------------------------------------------------------------------------------------------//
+#pragma mark - Getter,  Setter
+
+- (void)setBackgroundImage:(UIImage *)backgroundImage
+{
+    self.backgroundImageView.image = backgroundImage;
 }
 
 - (void)setFont:(UIFont *)font
@@ -160,7 +164,19 @@ CGFloat const ARNPageContainerTopTabViewItemMargin = 30.0f;
     for (UIView *view in self.scrollView.subviews) {
         [view removeFromSuperview];
     }
-    _itemViews = nil;
+    self.itemViews = nil;
+}
+
+- (void)resetButtonTitleColor
+{
+    for (NSUInteger i = 0; i < self.itemViews.count; i++) {
+        UIButton *itemView = self.itemViews[i];
+        if (self.selectedIndex == i) {
+            [itemView setTitleColor:self.selectedPageItemTitleColor forState:UIControlStateNormal];
+        } else {
+            [itemView setTitleColor:self.itemTitleColor forState:UIControlStateNormal];
+        }
+    }
 }
 
 - (UIButton *)addItemView
@@ -177,19 +193,12 @@ CGFloat const ARNPageContainerTopTabViewItemMargin = 30.0f;
 
 - (void)itemViewTapped:(UIButton *)sender
 {
-    NSInteger selectedIndex = [self.itemViews indexOfObject:sender];
+    self.selectedIndex = [self.itemViews indexOfObject:sender];
     
-    for (NSUInteger i = 0; i < self.itemViews.count; i++) {
-        UIButton *itemView = self.itemViews[i];
-        if (i == selectedIndex) {
-            [itemView setTitleColor:self.pageItemsTitleColor forState:UIControlStateNormal];
-        } else {
-            [itemView setTitleColor:self.itemTitleColor forState:UIControlStateNormal];
-        }
-    }
+    [self resetButtonTitleColor];
     
     if (self.selectTitleBlock) {
-        self.selectTitleBlock(selectedIndex);
+        self.selectTitleBlock(self.selectedIndex);
     }
 }
 
@@ -233,8 +242,8 @@ CGFloat const ARNPageContainerTopTabViewItemMargin = 30.0f;
         CGFloat ratio = (parentScrollView.contentOffset.x - oldX) / CGRectGetWidth(parentScrollView.frame);
         CGFloat previousItemContentOffsetX = [self contentOffsetForSelectedItemAtIndex:selectedIndex].x;
         CGFloat nextItemContentOffsetX = [self contentOffsetForSelectedItemAtIndex:targetIndex].x;
-//        CGFloat previousItemPageIndicatorX = [self centerForSelectedItemAtIndex:selectedIndex].x;
-//        CGFloat nextItemPageIndicatorX = [self centerForSelectedItemAtIndex:targetIndex].x;
+        //        CGFloat previousItemPageIndicatorX = [self centerForSelectedItemAtIndex:selectedIndex].x;
+        //        CGFloat nextItemPageIndicatorX = [self centerForSelectedItemAtIndex:targetIndex].x;
         UIButton *previosSelectedItem = self.itemViews[selectedIndex];
         UIButton *nextSelectedItem = self.itemViews[targetIndex];
         
@@ -259,19 +268,20 @@ CGFloat const ARNPageContainerTopTabViewItemMargin = 30.0f;
         
         if (scrollingTowards) {
             self.scrollView.contentOffset = CGPointMake(previousItemContentOffsetX +
-                                                               (nextItemContentOffsetX - previousItemContentOffsetX) * ratio , 0.0f);
-//            self.pageIndicatorView.center = CGPointMake(previousItemPageIndicatorX +
-//                                                        (nextItemPageIndicatorX - previousItemPageIndicatorX) * ratio,
-//                                                        [self pageIndicatorCenterY]);
+                                                        (nextItemContentOffsetX - previousItemContentOffsetX) * ratio , 0.0f);
+            //            self.pageIndicatorView.center = CGPointMake(previousItemPageIndicatorX +
+            //                                                        (nextItemPageIndicatorX - previousItemPageIndicatorX) * ratio,
+            //                                                        [self pageIndicatorCenterY]);
             
         } else {
             self.scrollView.contentOffset = CGPointMake(previousItemContentOffsetX -
-                                                               (nextItemContentOffsetX - previousItemContentOffsetX) * ratio , 0.0f);
-//            self.pageIndicatorView.center = CGPointMake(previousItemPageIndicatorX -
-//                                                        (nextItemPageIndicatorX - previousItemPageIndicatorX) * ratio,
-//                                                        [self pageIndicatorCenterY]);
+                                                        (nextItemContentOffsetX - previousItemContentOffsetX) * ratio , 0.0f);
+            //            self.pageIndicatorView.center = CGPointMake(previousItemPageIndicatorX -
+            //                                                        (nextItemPageIndicatorX - previousItemPageIndicatorX) * ratio,
+            //                                                        [self pageIndicatorCenterY]);
         }
     }
+    self.selectedIndex = selectedIndex;
 }
 
 - (void)getRed:(CGFloat *)red green:(CGFloat *)green blue:(CGFloat *)blue alpha:(CGFloat *)alpha fromColor:(UIColor *)color

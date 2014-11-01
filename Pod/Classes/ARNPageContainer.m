@@ -23,6 +23,7 @@ CGFloat const ARNPageContainerTopBarDefaultHeight = 44.0f;
 @property (nonatomic, assign) BOOL shouldObserveContentOffset;
 
 @property (nonatomic, strong) NSLayoutConstraint *topConstraint;
+@property (nonatomic, strong) NSLayoutConstraint *bottomConstraint;
 @property (nonatomic, strong) NSLayoutConstraint *topBarHeightConstraint;
 
 @property (nonatomic, strong) NSMutableArray *viewControllers;
@@ -86,7 +87,7 @@ CGFloat const ARNPageContainerTopBarDefaultHeight = 44.0f;
                                                           attribute:NSLayoutAttributeBottom
                                                          multiplier:1.0f
                                                            constant:0.0f]];
-    [ARNPageContainerLayout pinParentView:self.view subView:self.collectionView toEdge:NSLayoutAttributeBottom];
+    self.bottomConstraint = [ARNPageContainerLayout pinParentView:self.view subView:self.collectionView toEdge:NSLayoutAttributeBottom];
     [ARNPageContainerLayout pinParentView:self.view subView:self.collectionView toEdge:NSLayoutAttributeLeft];
     [ARNPageContainerLayout pinParentView:self.view subView:self.collectionView toEdge:NSLayoutAttributeRight];
 }
@@ -177,6 +178,11 @@ CGFloat const ARNPageContainerTopBarDefaultHeight = 44.0f;
     [self.viewControllers addObject:@{uuidString : controller}];
     
     [self.collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:uuidString];
+    
+    [self.collectionView reloadData];
+    
+    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:self.viewControllers.count - 1 inSection:0];
+    [self collectionView:self.collectionView cellForItemAtIndexPath:indexPath];
 }
 
 - (void)addVCs:(NSArray *)controllers
@@ -187,43 +193,41 @@ CGFloat const ARNPageContainerTopBarDefaultHeight = 44.0f;
         UIViewController *controller = controllers[i];
         [self addControler:controller];
     }
-    
-    [self.collectionView reloadData];
 }
 
 - (void)addVC:(UIViewController *)controller
 {
     [self addControler:controller];
-    [self.collectionView reloadData];
 }
 
 - (void)setSelectedIndex:(NSUInteger)selectedIndex animated:(BOOL)animated
 {
-    if (selectedIndex > self.viewControllers.count) {
-        selectedIndex = self.viewControllers.count;
+    if (selectedIndex >= self.viewControllers.count) {
+        return;
     }
     
     __weak typeof(self) weakSelf = self;
-    [self.collectionView performBatchUpdates:^{
-    } completion:^(BOOL finished) {
-        [weakSelf.collectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:selectedIndex inSection:0]
-                                        atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally
-                                                animated:animated];
-        if (!animated) {
-            // no animated is not call scrollViewDidEndScrollingAnimation
-            weakSelf.collectionView.userInteractionEnabled = YES;
-            
-            if (weakSelf.changeOffsetBlock) {
-                weakSelf.changeOffsetBlock(weakSelf.collectionView, selectedIndex);
-            }
-        }
-        
-        if (weakSelf.changeIndexBlock) {
-            NSDictionary *dict = weakSelf.viewControllers[selectedIndex];
-            UIViewController *controller = dict[dict.allKeys[0]];
-            weakSelf.changeIndexBlock(controller, selectedIndex);
-        }
-    }];
+    [self.collectionView performBatchUpdates:^{}
+                                  completion:
+     ^(BOOL finished) {
+         [weakSelf.collectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:selectedIndex inSection:0]
+                                         atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally
+                                                 animated:animated];
+         if (!animated) {
+             // no animated is not call scrollViewDidEndScrollingAnimation
+             weakSelf.collectionView.userInteractionEnabled = YES;
+             
+             if (weakSelf.changeOffsetBlock) {
+                 weakSelf.changeOffsetBlock(weakSelf.collectionView, selectedIndex);
+             }
+         }
+         
+         if (weakSelf.changeIndexBlock) {
+             NSDictionary *dict = weakSelf.viewControllers[selectedIndex];
+             UIViewController *controller = dict[dict.allKeys[0]];
+             weakSelf.changeIndexBlock(controller, selectedIndex);
+         }
+     }];
     
     _selectedIndex = selectedIndex;
 }
@@ -283,6 +287,18 @@ CGFloat const ARNPageContainerTopBarDefaultHeight = 44.0f;
     [self.view setNeedsUpdateConstraints];
 }
 
+- (CGFloat)bottomMargin
+{
+    return self.bottomConstraint.constant;
+}
+
+- (void)setBottomMargin:(CGFloat)bottomMargin
+{
+    self.bottomConstraint.constant = bottomMargin;
+    
+    [self.collectionView setNeedsUpdateConstraints];
+}
+
 // ------------------------------------------------------------------------------------------------------------------//
 #pragma mark - KVO
 
@@ -334,12 +350,15 @@ CGFloat const ARNPageContainerTopBarDefaultHeight = 44.0f;
     UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:dict.allKeys[0]
                                                                            forIndexPath:indexPath];
     
+    cell.contentView.translatesAutoresizingMaskIntoConstraints = NO;
+    [ARNPageContainerLayout allPinParentView:cell subView:cell.contentView];
     cell.contentView.clipsToBounds = YES;
     
     if (!cell.contentView.subviews.count) {
         UIViewController *controller = dict[dict.allKeys[0]];
-        controller.view.frame = cell.contentView.bounds;
+        controller.view.translatesAutoresizingMaskIntoConstraints = NO;
         [cell.contentView addSubview:controller.view];
+        [ARNPageContainerLayout allPinParentView:cell.contentView subView:controller.view];
     }
     
     return cell;
