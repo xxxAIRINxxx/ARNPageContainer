@@ -13,8 +13,6 @@
 
 @interface ARNViewController ()
 
-@property (nonatomic, strong) UIViewController *con;
-
 @end
 
 @implementation ARNViewController
@@ -25,11 +23,6 @@
     
     ARNPageContainer *pageContainer = [[ARNPageContainer alloc] init];
     [pageContainer setParentVC:self];
-    
-    pageContainer.changeIndexBlock = ^(UIViewController *selectIndexController, NSInteger selectedIndex){
-        NSLog(@"---------- call changeIndexBlock ---------- ");
-        NSLog(@"selectIndexController : %@", selectIndexController.title);
-    };
     
     {
         UIViewController *controller = [[UIViewController alloc] init];
@@ -87,6 +80,12 @@
     
     tabView.selectTitleBlock = ^(NSInteger selectedIndex){
         [pageContainer setSelectedIndex:selectedIndex animated:YES];
+    };
+    
+    pageContainer.changeIndexBlock = ^(UIViewController *selectIndexController, NSInteger selectedIndex){
+        NSLog(@"---------- call changeIndexBlock ---------- ");
+        NSLog(@"selectIndexController : %@", selectIndexController.title);
+        weakTabView.selectedIndex = selectedIndex;
     };
     
     [pageContainer setSelectedIndex:2 animated:NO];

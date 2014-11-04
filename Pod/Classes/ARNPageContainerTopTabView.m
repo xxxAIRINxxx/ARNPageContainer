@@ -20,7 +20,6 @@ CGFloat const ARNPageContainerTopTabViewItemMargin = 30.0f;
 @interface ARNPageContainerTopTabView ()
 
 @property (nonatomic, strong, readwrite) UIScrollView *scrollView;
-@property (nonatomic, assign, readwrite) NSUInteger selectedIndex;
 
 @property (nonatomic, strong) NSArray *itemViews;
 @property (nonatomic, strong) UIImageView *backgroundImageView;
@@ -33,12 +32,12 @@ CGFloat const ARNPageContainerTopTabViewItemMargin = 30.0f;
 {
     [self settingScrollView];
     
-    self.selectedIndex = 0;
-    self.font = [UIFont systemFontOfSize:14];
-    self.itemTitleColor = [UIColor lightGrayColor];
-    self.pageItemsTitleColor = [UIColor lightGrayColor];
-    self.selectedPageItemTitleColor = [UIColor whiteColor];
-    self.itemMargin = ARNPageContainerTopTabViewItemMargin;
+    _selectedIndex = 0;
+    _font = [UIFont systemFontOfSize:14];
+    _itemTitleColor = [UIColor lightGrayColor];
+    _pageItemsTitleColor = [UIColor lightGrayColor];
+    _selectedPageItemTitleColor = [UIColor whiteColor];
+    _itemMargin = ARNPageContainerTopTabViewItemMargin;
 }
 
 - (void)settingScrollView
@@ -143,6 +142,14 @@ CGFloat const ARNPageContainerTopTabViewItemMargin = 30.0f;
     [self layoutItemViews];
 }
 
+- (void)setSelectedIndex:(NSUInteger)selectedIndex
+{
+    _selectedIndex = selectedIndex;
+    
+    [self resetButtonTitleColor];
+    [self layoutItemViews];
+}
+
 // ------------------------------------------------------------------------------------------------------------------//
 #pragma mark * Lazy getters
 
@@ -171,7 +178,7 @@ CGFloat const ARNPageContainerTopTabViewItemMargin = 30.0f;
 {
     for (NSUInteger i = 0; i < self.itemViews.count; i++) {
         UIButton *itemView = self.itemViews[i];
-        if (self.selectedIndex == i) {
+        if (_selectedIndex == i) {
             [itemView setTitleColor:self.selectedPageItemTitleColor forState:UIControlStateNormal];
         } else {
             [itemView setTitleColor:self.itemTitleColor forState:UIControlStateNormal];
@@ -193,7 +200,7 @@ CGFloat const ARNPageContainerTopTabViewItemMargin = 30.0f;
 
 - (void)itemViewTapped:(UIButton *)sender
 {
-    self.selectedIndex = [self.itemViews indexOfObject:sender];
+    _selectedIndex = [self.itemViews indexOfObject:sender];
     
     [self resetButtonTitleColor];
     
@@ -264,8 +271,6 @@ CGFloat const ARNPageContainerTopTabViewItemMargin = 30.0f;
         [previosSelectedItem setTitleColor:prev forState:UIControlStateNormal];
         [nextSelectedItem setTitleColor:next forState:UIControlStateNormal];
         
-        
-        
         if (scrollingTowards) {
             self.scrollView.contentOffset = CGPointMake(previousItemContentOffsetX +
                                                         (nextItemContentOffsetX - previousItemContentOffsetX) * ratio , 0.0f);
@@ -281,7 +286,7 @@ CGFloat const ARNPageContainerTopTabViewItemMargin = 30.0f;
             //                                                        [self pageIndicatorCenterY]);
         }
     }
-    self.selectedIndex = selectedIndex;
+    _selectedIndex = selectedIndex;
 }
 
 - (void)getRed:(CGFloat *)red green:(CGFloat *)green blue:(CGFloat *)blue alpha:(CGFloat *)alpha fromColor:(UIColor *)color

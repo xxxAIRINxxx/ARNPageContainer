@@ -35,6 +35,11 @@ CGFloat const ARNPageContainerTopBarDefaultHeight = 44.0f;
 - (void)dealloc
 {
     [self stopObservingContentOffset];
+    
+    _shouldObserveContentOffset = NO;
+    _collectionView.dataSource = nil;
+    _collectionView.delegate = nil;
+    _collectionView = nil;
 }
 
 - (void)commonInit
@@ -123,18 +128,6 @@ CGFloat const ARNPageContainerTopBarDefaultHeight = 44.0f;
     [self settingCollectionView];
     
     [self startObservingContentOffsetForScrollView:self.collectionView];
-}
-
-- (void)viewDidUnload
-{
-    [self stopObservingContentOffset];
-    
-    self.shouldObserveContentOffset = NO;
-    self.collectionView.dataSource = nil;
-    self.collectionView.delegate = nil;
-    self.collectionView = nil;
-    
-    [super viewDidUnload];
 }
 
 // ------------------------------------------------------------------------------------------------------------------//
