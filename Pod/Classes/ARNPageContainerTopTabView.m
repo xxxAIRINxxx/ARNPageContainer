@@ -12,7 +12,7 @@
 
 #import "ARNPageContainerTopTabView.h"
 
-#import "ARNPageContainerLayout.h"
+#import <ARNLayout.h>
 
 CGFloat const ARNPageContainerTopTabViewItemViewWidth = 100.0f;
 CGFloat const ARNPageContainerTopTabViewItemMargin = 30.0f;

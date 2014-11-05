@@ -25,6 +25,10 @@ it, simply add the following line to your Podfile:
 
     pod "ARNPageContainer"
 
+## Dependency
+
+[ARNLayout](https://github.com/xxxAIRINxxx/ARNLayout)
+
 ## License
 
 ARNPageContainer is available under the MIT license. See the LICENSE file for more info.

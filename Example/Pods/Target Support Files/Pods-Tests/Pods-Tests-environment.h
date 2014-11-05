@@ -6,11 +6,17 @@
 // project.
 
 
+// ARNLayout
+#define COCOAPODS_POD_AVAILABLE_ARNLayout
+#define COCOAPODS_VERSION_MAJOR_ARNLayout 0
+#define COCOAPODS_VERSION_MINOR_ARNLayout 1
+#define COCOAPODS_VERSION_PATCH_ARNLayout 0
+
 // ARNPageContainer
 #define COCOAPODS_POD_AVAILABLE_ARNPageContainer
 #define COCOAPODS_VERSION_MAJOR_ARNPageContainer 0
 #define COCOAPODS_VERSION_MINOR_ARNPageContainer 1
-#define COCOAPODS_VERSION_PATCH_ARNPageContainer 0
+#define COCOAPODS_VERSION_PATCH_ARNPageContainer 2
 
 // Expecta
 #define COCOAPODS_POD_AVAILABLE_Expecta

@@ -12,7 +12,7 @@
 
 #import "ARNPageContainer.h"
 
-#import "ARNPageContainerLayout.h"
+#import <ARNLayout.h>
 
 CGFloat const ARNPageContainerTopBarDefaultHeight = 44.0f;
 
@@ -57,12 +57,11 @@ CGFloat const ARNPageContainerTopBarDefaultHeight = 44.0f;
     
     [self.view addSubview:self.topBarLayerView];
     
-    [ARNPageContainerLayout pinParentView:self.view subView:self.topBarLayerView toEdge:NSLayoutAttributeLeft];
-    [ARNPageContainerLayout pinParentView:self.view subView:self.topBarLayerView toEdge:NSLayoutAttributeRight];
-    self.topConstraint = [ARNPageContainerLayout pinParentView:self.view subView:self.topBarLayerView toEdge:NSLayoutAttributeTop];
-    self.topBarHeightConstraint = [ARNPageContainerLayout addConstraintView:self.topBarLayerView
-                                                                     toEdge:NSLayoutAttributeHeight
-                                                                   constant:ARNPageContainerTopBarDefaultHeight];
+    [self.view arn_pinWithSubView:self.topBarLayerView attribute:NSLayoutAttributeLeft];
+    [self.view arn_pinWithSubView:self.topBarLayerView attribute:NSLayoutAttributeRight];
+    self.topConstraint = [self.view arn_pinWithSubView:self.topBarLayerView attribute:NSLayoutAttributeTop];
+    self.topBarHeightConstraint = [self.topBarLayerView arn_addConstraintWithAttribute:NSLayoutAttributeHeight
+                                                                              constant:ARNPageContainerTopBarDefaultHeight];
     [self.view addConstraint:self.topBarHeightConstraint];
 }
 
@@ -92,9 +91,9 @@ CGFloat const ARNPageContainerTopBarDefaultHeight = 44.0f;
                                                           attribute:NSLayoutAttributeBottom
                                                          multiplier:1.0f
                                                            constant:0.0f]];
-    self.bottomConstraint = [ARNPageContainerLayout pinParentView:self.view subView:self.collectionView toEdge:NSLayoutAttributeBottom];
-    [ARNPageContainerLayout pinParentView:self.view subView:self.collectionView toEdge:NSLayoutAttributeLeft];
-    [ARNPageContainerLayout pinParentView:self.view subView:self.collectionView toEdge:NSLayoutAttributeRight];
+    self.bottomConstraint = [self.view arn_pinWithSubView:self.collectionView attribute:NSLayoutAttributeBottom];
+    [self.view arn_pinWithSubView:self.collectionView attribute:NSLayoutAttributeLeft];
+    [self.view arn_pinWithSubView:self.collectionView attribute:NSLayoutAttributeRight];
 }
 
 - (instancetype)init
@@ -142,7 +141,7 @@ CGFloat const ARNPageContainerTopBarDefaultHeight = 44.0f;
     [controller.view addSubview:self.view];
     [controller addChildViewController:self];
     
-    [ARNPageContainerLayout allPinParentView:controller.view subView:self.view];
+    [controller.view arn_allPinWithSubView:self.view];
     
     [self didMoveToParentViewController:controller];
 }
@@ -160,7 +159,7 @@ CGFloat const ARNPageContainerTopBarDefaultHeight = 44.0f;
     
     [self.topBarLayerView addSubview:topBarView];
     
-    [ARNPageContainerLayout allPinParentView:self.topBarLayerView subView:topBarView];
+    [self.topBarLayerView arn_allPinWithSubView:topBarView];
 }
 
 - (void)addControler:(UIViewController *)controller
@@ -344,14 +343,14 @@ CGFloat const ARNPageContainerTopBarDefaultHeight = 44.0f;
                                                                            forIndexPath:indexPath];
     
     cell.contentView.translatesAutoresizingMaskIntoConstraints = NO;
-    [ARNPageContainerLayout allPinParentView:cell subView:cell.contentView];
+    [cell arn_allPinWithSubView:cell.contentView];
     cell.contentView.clipsToBounds = YES;
     
     if (!cell.contentView.subviews.count) {
         UIViewController *controller = dict[dict.allKeys[0]];
         controller.view.translatesAutoresizingMaskIntoConstraints = NO;
         [cell.contentView addSubview:controller.view];
-        [ARNPageContainerLayout allPinParentView:cell.contentView subView:controller.view];
+        [cell.contentView arn_allPinWithSubView:controller.view];
     }
     
     return cell;

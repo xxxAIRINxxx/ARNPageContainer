@@ -2,10 +2,12 @@ source 'https://github.com/CocoaPods/Specs.git'
 
 target 'ARNPageContainer', :exclusive => true do
   pod "ARNPageContainer", :path => "../"
+  pod 'ARNLayout'
 end
 
 target 'Tests', :exclusive => true do
   pod "ARNPageContainer", :path => "../"
+  pod 'ARNLayout'
 
   pod 'Specta', '~> 0.2.1'
   pod 'Expecta'
