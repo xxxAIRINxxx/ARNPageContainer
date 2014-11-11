@@ -165,7 +165,8 @@ CGFloat const ARNPageContainerTopBarDefaultHeight = 44.0f;
     
     [self.collectionView reloadData];
     
-    self.selectedIndex = self.viewControllers.count - 1;
+    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:self.viewControllers.count - 1 inSection:0];
+    [self collectionView:self.collectionView cellForItemAtIndexPath:indexPath];
 }
 
 - (void)addVCs:(NSArray *)controllers
