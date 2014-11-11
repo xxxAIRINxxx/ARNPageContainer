@@ -14,6 +14,8 @@
 
 #import <ARNLayout.h>
 
+#import "ARNPageContainerViewCell.h"
+
 CGFloat const ARNPageContainerTopBarDefaultHeight = 44.0f;
 
 @interface ARNPageContainer () <UIScrollViewDelegate, UICollectionViewDataSource, UICollectionViewDelegate>
@@ -53,13 +55,11 @@ CGFloat const ARNPageContainerTopBarDefaultHeight = 44.0f;
 {
     self.topBarLayerView = [[UIView alloc] initWithFrame:CGRectZero];
     
-    self.topBarLayerView.translatesAutoresizingMaskIntoConstraints = NO;
-    
     [self.view addSubview:self.topBarLayerView];
     
-    [self.view arn_pinWithSubView:self.topBarLayerView attribute:NSLayoutAttributeLeft];
-    [self.view arn_pinWithSubView:self.topBarLayerView attribute:NSLayoutAttributeRight];
-    self.topConstraint = [self.view arn_pinWithSubView:self.topBarLayerView attribute:NSLayoutAttributeTop];
+    [self.view arn_pinWithView:self.topBarLayerView toView:self.view attribute:NSLayoutAttributeLeft constant:0.0f];
+    [self.view arn_pinWithView:self.topBarLayerView toView:self.view attribute:NSLayoutAttributeRight constant:0.0f];
+    self.topConstraint = [self.view arn_pinWithView:self.topBarLayerView toView:self.view attribute:NSLayoutAttributeTop constant:0.0f];
     self.topBarHeightConstraint = [self.topBarLayerView arn_addConstraintWithAttribute:NSLayoutAttributeHeight
                                                                               constant:ARNPageContainerTopBarDefaultHeight];
     [self.view addConstraint:self.topBarHeightConstraint];
@@ -72,28 +72,21 @@ CGFloat const ARNPageContainerTopBarDefaultHeight = 44.0f;
     layout.minimumInteritemSpacing = 0;
     layout.minimumLineSpacing = 0;
     layout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
+    
     self.collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:layout];
     self.collectionView.backgroundColor = [UIColor clearColor];
     self.collectionView.dataSource = self;
     self.collectionView.delegate   = self;
-    
     self.collectionView.pagingEnabled = YES;
     self.collectionView.alwaysBounceHorizontal = YES;
-    self.collectionView.translatesAutoresizingMaskIntoConstraints = NO;
     self.collectionView.showsHorizontalScrollIndicator = NO;
     
     [self.view addSubview:self.collectionView];
     
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.collectionView
-                                                          attribute:NSLayoutAttributeTop
-                                                          relatedBy:NSLayoutRelationEqual
-                                                             toItem:self.topBarLayerView
-                                                          attribute:NSLayoutAttributeBottom
-                                                         multiplier:1.0f
-                                                           constant:0.0f]];
-    self.bottomConstraint = [self.view arn_pinWithSubView:self.collectionView attribute:NSLayoutAttributeBottom];
-    [self.view arn_pinWithSubView:self.collectionView attribute:NSLayoutAttributeLeft];
-    [self.view arn_pinWithSubView:self.collectionView attribute:NSLayoutAttributeRight];
+    [self.view arn_pinWithView:self.collectionView isWithViewTop:YES toView:self.topBarLayerView isToViewTop:NO];
+    [self.view arn_pinWithView:self.collectionView toView:self.view attribute:NSLayoutAttributeLeft constant:0.0f];
+    [self.view arn_pinWithView:self.collectionView toView:self.view attribute:NSLayoutAttributeRight constant:0.0f];
+    self.bottomConstraint = [self.view arn_pinWithView:self.collectionView toView:self.view attribute:NSLayoutAttributeBottom constant:0.0f];
 }
 
 - (instancetype)init
@@ -141,7 +134,7 @@ CGFloat const ARNPageContainerTopBarDefaultHeight = 44.0f;
     [controller.view addSubview:self.view];
     [controller addChildViewController:self];
     
-    [controller.view arn_allPinWithSubView:self.view];
+    [controller.view arn_allPinWithView:self.view toView:controller.view];
     
     [self didMoveToParentViewController:controller];
 }
@@ -155,11 +148,10 @@ CGFloat const ARNPageContainerTopBarDefaultHeight = 44.0f;
     }
     
     topBarView.frame = self.topBarLayerView.bounds;
-    topBarView.translatesAutoresizingMaskIntoConstraints = NO;
     
     [self.topBarLayerView addSubview:topBarView];
     
-    [self.topBarLayerView arn_allPinWithSubView:topBarView];
+    [self.topBarLayerView arn_allPinWithView:topBarView toView:self.topBarLayerView];
 }
 
 - (void)addControler:(UIViewController *)controller
@@ -169,12 +161,11 @@ CGFloat const ARNPageContainerTopBarDefaultHeight = 44.0f;
     
     [self.viewControllers addObject:@{uuidString : controller}];
     
-    [self.collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:uuidString];
+    [self.collectionView registerClass:[ARNPageContainerViewCell class] forCellWithReuseIdentifier:uuidString];
     
     [self.collectionView reloadData];
     
-    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:self.viewControllers.count - 1 inSection:0];
-    [self collectionView:self.collectionView cellForItemAtIndexPath:indexPath];
+    self.selectedIndex = self.viewControllers.count - 1;
 }
 
 - (void)addVCs:(NSArray *)controllers
@@ -339,18 +330,12 @@ CGFloat const ARNPageContainerTopBarDefaultHeight = 44.0f;
 {
     NSDictionary *dict = self.viewControllers[indexPath.row];
     
-    UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:dict.allKeys[0]
-                                                                           forIndexPath:indexPath];
-    
-    cell.contentView.translatesAutoresizingMaskIntoConstraints = NO;
-    [cell arn_allPinWithSubView:cell.contentView];
-    cell.contentView.clipsToBounds = YES;
+    ARNPageContainerViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:dict.allKeys[0]
+                                                                               forIndexPath:indexPath];
     
     if (!cell.contentView.subviews.count) {
         UIViewController *controller = dict[dict.allKeys[0]];
-        controller.view.translatesAutoresizingMaskIntoConstraints = NO;
-        [cell.contentView addSubview:controller.view];
-        [cell.contentView arn_allPinWithSubView:controller.view];
+        [cell addContentView:controller.view];
     }
     
     return cell;
@@ -375,7 +360,7 @@ CGFloat const ARNPageContainerTopBarDefaultHeight = 44.0f;
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
 {
-    self.selectedIndex = scrollView.contentOffset.x / CGRectGetWidth(scrollView.frame);
+    _selectedIndex = scrollView.contentOffset.x / CGRectGetWidth(scrollView.frame);
     scrollView.userInteractionEnabled = YES;
 }
 

@@ -16,21 +16,125 @@
 
 @implementation UIView (ARNLayout)
 
-- (NSLayoutConstraint *)arn_pinWithSubView:(UIView *)subView attribute:(NSLayoutAttribute)attribute
+- (void)arn_checkTranslatesAutoresizingWithView:(UIView *)withView toView:(UIView *)toView
 {
-    return [ARNLayoutConstraint addPinConstraintWithParentView:self withItem:self toItem:subView attribute:attribute];
+    if (self.translatesAutoresizingMaskIntoConstraints) {
+        self.translatesAutoresizingMaskIntoConstraints = NO;
+    }
+    
+    if (withView && withView.translatesAutoresizingMaskIntoConstraints) {
+        withView.translatesAutoresizingMaskIntoConstraints = NO;
+    }
+    
+    if (toView && toView.translatesAutoresizingMaskIntoConstraints) {
+        toView.translatesAutoresizingMaskIntoConstraints = NO;
+    }
 }
 
-- (void)arn_allPinWithSubView:(UIView *)subView
+- (NSLayoutConstraint *)arn_addConstraintWithView:(UIView *)withView
+                                        relatedBy:(NSLayoutRelation)relation
+                                    withAttribute:(NSLayoutAttribute)withAttribute
+                                           toView:(UIView *)toView
+                                      toAttribute:(NSLayoutAttribute)toAttribute
+                                         constant:(CGFloat)constant
 {
-    [ARNLayoutConstraint addPinConstraintWithParentView:self withItem:self toItem:subView attribute:NSLayoutAttributeTop];
-    [ARNLayoutConstraint addPinConstraintWithParentView:self withItem:self toItem:subView attribute:NSLayoutAttributeBottom];
-    [ARNLayoutConstraint addPinConstraintWithParentView:self withItem:self toItem:subView attribute:NSLayoutAttributeLeft];
-    [ARNLayoutConstraint addPinConstraintWithParentView:self withItem:self toItem:subView attribute:NSLayoutAttributeRight];
+    [self arn_checkTranslatesAutoresizingWithView:withView toView:toView];
+    
+    return [ARNLayoutConstraint addConstraintWithView:self
+                                            relatedBy:relation
+                                             withItem:withView
+                                             withEdge:withAttribute
+                                               toItem:toView
+                                               toEdge:toAttribute
+                                             constant:constant];
+}
+
+- (NSLayoutConstraint *)arn_pinWithView:(UIView *)withView
+                                 toView:(UIView *)toView
+                              attribute:(NSLayoutAttribute)attribute
+                               constant:(CGFloat)constant
+{
+    return [self arn_addConstraintWithView:withView
+                                 relatedBy:NSLayoutRelationEqual
+                             withAttribute:attribute
+                                    toView:toView
+                               toAttribute:attribute
+                                  constant:constant];
+}
+
+- (NSLayoutConstraint *)arn_pinWithView:(UIView *)withView
+                          isWithViewTop:(BOOL)isWithViewTop
+                                 toView:(UIView *)toView
+                            isToViewTop:(BOOL)isToViewTop
+{
+    NSLayoutAttribute withViewAttribute = NSLayoutAttributeTop;
+    NSLayoutAttribute toViewAttribute = NSLayoutAttributeTop;
+    
+    if (!isWithViewTop) {
+        withViewAttribute = NSLayoutAttributeBottom;
+    }
+    if (!isToViewTop) {
+        toViewAttribute = NSLayoutAttributeBottom;
+    }
+    
+    return [self arn_addConstraintWithView:withView
+                                 relatedBy:NSLayoutRelationEqual
+                             withAttribute:withViewAttribute
+                                    toView:toView
+                               toAttribute:toViewAttribute
+                                  constant:0.0f];
+}
+
+- (void)arn_allPinWithSubView:(UIView *)suvView
+{
+    [self arn_checkTranslatesAutoresizingWithView:suvView toView:nil];
+    
+    [ARNLayoutConstraint addPinConstraintWithParentView:self withItem:suvView toItem:self attribute:NSLayoutAttributeTop constant:0.0f];
+    [ARNLayoutConstraint addPinConstraintWithParentView:self withItem:suvView toItem:self attribute:NSLayoutAttributeBottom constant:0.0f];
+    [ARNLayoutConstraint addPinConstraintWithParentView:self withItem:suvView toItem:self attribute:NSLayoutAttributeLeft constant:0.0f];
+    [ARNLayoutConstraint addPinConstraintWithParentView:self withItem:suvView toItem:self attribute:NSLayoutAttributeRight constant:0.0f];
+}
+
+- (void)arn_allPinWithView:(UIView *)withView toView:(UIView *)toView
+{
+    [self arn_checkTranslatesAutoresizingWithView:withView toView:toView];
+    
+    [ARNLayoutConstraint addPinConstraintWithParentView:self withItem:withView toItem:toView attribute:NSLayoutAttributeTop constant:0.0f];
+    [ARNLayoutConstraint addPinConstraintWithParentView:self withItem:withView toItem:toView attribute:NSLayoutAttributeBottom constant:0.0f];
+    [ARNLayoutConstraint addPinConstraintWithParentView:self withItem:withView toItem:toView attribute:NSLayoutAttributeLeft constant:0.0f];
+    [ARNLayoutConstraint addPinConstraintWithParentView:self withItem:withView toItem:toView attribute:NSLayoutAttributeRight constant:0.0f];
+}
+
+- (void)arn_allPinWithView:(UIView *)withView toView:(UIView *)toView margin:(CGFloat)margin
+{
+    [self arn_checkTranslatesAutoresizingWithView:withView toView:toView];
+    
+    [ARNLayoutConstraint addPinConstraintWithParentView:self
+                                               withItem:withView
+                                                 toItem:toView
+                                              attribute:NSLayoutAttributeTop
+                                               constant:margin];
+    [ARNLayoutConstraint addPinConstraintWithParentView:self
+                                               withItem:withView
+                                                 toItem:toView
+                                              attribute:NSLayoutAttributeBottom
+                                               constant:-margin];
+    [ARNLayoutConstraint addPinConstraintWithParentView:self
+                                               withItem:withView
+                                                 toItem:toView
+                                              attribute:NSLayoutAttributeLeft
+                                               constant:margin];
+    [ARNLayoutConstraint addPinConstraintWithParentView:self
+                                               withItem:withView
+                                                 toItem:toView
+                                              attribute:NSLayoutAttributeRight
+                                               constant:-margin];
 }
 
 - (NSLayoutConstraint *)arn_addConstraintWithAttribute:(NSLayoutAttribute)attribute constant:(CGFloat)constant
 {
+    [self arn_checkTranslatesAutoresizingWithView:nil toView:nil];
+    
     return [ARNLayoutConstraint addConstraintWithView:self attribute:attribute constant:constant];
 }
 

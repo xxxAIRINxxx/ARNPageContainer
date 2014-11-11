@@ -38,6 +38,7 @@
                                               withItem:(UIView *)withItem
                                                 toItem:(UIView *)toItem
                                              attribute:(NSLayoutAttribute)attribute
+                                              constant:(CGFloat)constant
 {
     return [self addConstraintWithView:parentView
                              relatedBy:NSLayoutRelationEqual
@@ -45,6 +46,21 @@
                               withEdge:attribute
                                 toItem:toItem
                                 toEdge:attribute
+                              constant:constant];
+}
+
++ (NSLayoutConstraint *)addPinConstraintWithParentView:(UIView *)parentView
+                                              withItem:(UIView *)withItem
+                                         withAttribute:(NSLayoutAttribute)withAttribute
+                                                toItem:(UIView *)toItem
+                                           toAttribute:(NSLayoutAttribute)toAttribute;
+{
+    return [self addConstraintWithView:parentView
+                             relatedBy:NSLayoutRelationEqual
+                              withItem:withItem
+                              withEdge:withAttribute
+                                toItem:toItem
+                                toEdge:toAttribute
                               constant:0.0f];
 }
 

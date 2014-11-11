@@ -10,6 +10,7 @@
 
 #import <ARNPageContainer.h>
 #import <ARNPageContainerTopTabView.h>
+#import <ARNLayout.h>
 
 @interface ARNViewController ()
 
@@ -31,8 +32,10 @@
         imageView.contentMode = UIViewContentModeScaleAspectFill;
         imageView.frame = controller.view.bounds;
         [controller.view addSubview:imageView];
+        [controller.view arn_allPinWithSubView:imageView];
         controller.title = @"controller 1";
         [pageContainer addVC:controller];
+        
     }
     {
         UIViewController *controller = [[UIViewController alloc] init];
@@ -41,6 +44,7 @@
         imageView.contentMode = UIViewContentModeScaleAspectFill;
         imageView.frame = controller.view.bounds;
         [controller.view addSubview:imageView];
+        [controller.view arn_allPinWithSubView:imageView];
         controller.title = @"controller 2";
         [pageContainer addVC:controller];
     }
@@ -51,6 +55,7 @@
         imageView.contentMode = UIViewContentModeScaleAspectFill;
         imageView.frame = controller.view.bounds;
         [controller.view addSubview:imageView];
+        [controller.view arn_allPinWithSubView:imageView];
         controller.title = @"controller 3";
         [pageContainer addVC:controller];
     }
@@ -61,6 +66,7 @@
         imageView.contentMode = UIViewContentModeScaleAspectFill;
         imageView.frame = controller.view.bounds;
         [controller.view addSubview:imageView];
+        [controller.view arn_allPinWithSubView:imageView];
         controller.title = @"controller 4";
         [pageContainer addVC:controller];
     }
@@ -88,7 +94,7 @@
         weakTabView.selectedIndex = selectedIndex;
     };
     
-    [pageContainer setSelectedIndex:2 animated:NO];
+    [pageContainer setSelectedIndex:2 animated:YES];
 }
 
 - (void)didReceiveMemoryWarning

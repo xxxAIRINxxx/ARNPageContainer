@@ -21,7 +21,14 @@
 + (NSLayoutConstraint *)addPinConstraintWithParentView:(UIView *)parentView
                                               withItem:(UIView *)withItem
                                                 toItem:(UIView *)toItem
-                                             attribute:(NSLayoutAttribute)attribute;
+                                             attribute:(NSLayoutAttribute)attribute
+                                              constant:(CGFloat)constant;
+
++ (NSLayoutConstraint *)addPinConstraintWithParentView:(UIView *)parentView
+                                              withItem:(UIView *)withItem
+                                         withAttribute:(NSLayoutAttribute)withAttribute
+                                                toItem:(UIView *)toItem
+                                           toAttribute:(NSLayoutAttribute)toAttribute;
 
 + (NSLayoutConstraint *)addConstraintWithView:(UIView *)view
                                     attribute:(NSLayoutAttribute)attribute
