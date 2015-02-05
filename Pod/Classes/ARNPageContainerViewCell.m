@@ -29,6 +29,7 @@
     self.clipsToBounds = YES;
     
     _dummyContentView = [UIView new];
+    // FIXME : can not add contentView
     [self addSubview:_dummyContentView];
     [self arn_allPinWithSubView:_dummyContentView];
     

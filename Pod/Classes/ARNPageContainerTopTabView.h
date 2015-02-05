@@ -20,10 +20,9 @@
 @property (nonatomic, strong, readonly) UIScrollView *scrollView;
 @property (nonatomic, assign) NSUInteger selectedIndex;
 
-@property (nonatomic, strong) UIColor *pageItemsTitleColor;
+@property (nonatomic, strong) UIColor *itemTitleColor;
 @property (nonatomic, strong) UIColor *selectedPageItemTitleColor;
 @property (nonatomic, strong) UIImage *backgroundImage;
-@property (nonatomic, strong) UIColor *itemTitleColor;
 @property (nonatomic, strong) UIFont  *font;
 @property (nonatomic, assign) CGFloat itemMargin;
 

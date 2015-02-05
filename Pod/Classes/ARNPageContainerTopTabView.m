@@ -35,7 +35,6 @@ CGFloat const ARNPageContainerTopTabViewItemMargin = 30.0f;
     _selectedIndex = 0;
     _font = [UIFont systemFontOfSize:14];
     _itemTitleColor = [UIColor lightGrayColor];
-    _pageItemsTitleColor = [UIColor lightGrayColor];
     _selectedPageItemTitleColor = [UIColor whiteColor];
     _itemMargin = ARNPageContainerTopTabViewItemMargin;
 }
@@ -255,7 +254,7 @@ CGFloat const ARNPageContainerTopTabViewItemMargin = 30.0f;
         UIButton *nextSelectedItem = self.itemViews[targetIndex];
         
         CGFloat red, green, blue, alpha, highlightedRed, highlightedGreen, highlightedBlue, highlightedAlpha;
-        [self getRed:&red green:&green blue:&blue alpha:&alpha fromColor:self.pageItemsTitleColor];
+        [self getRed:&red green:&green blue:&blue alpha:&alpha fromColor:self.itemTitleColor];
         [self getRed:&highlightedRed green:&highlightedGreen blue:&highlightedBlue alpha:&highlightedAlpha fromColor:self.selectedPageItemTitleColor];
         
         CGFloat absRatio = fabsf(ratio);
