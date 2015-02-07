@@ -73,8 +73,8 @@
     
     ARNPageContainerTopTabView *tabView = [ARNPageContainerTopTabView new];
     tabView.font = [UIFont boldSystemFontOfSize:20];
-    tabView.backgroundColor = [UIColor darkGrayColor];
-    tabView.itemTitleColor = [UIColor blackColor];
+    tabView.backgroundColor = [UIColor blackColor];
+    tabView.itemTitleColor = [UIColor colorWithRed:130/255.0 green:130/255.0 blue:255/255.0 alpha:1.0];
     tabView.itemTitles = [pageContainer headerTitles];
     [pageContainer setTopBarView:tabView];
     
