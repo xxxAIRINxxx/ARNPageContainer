@@ -5,6 +5,8 @@
 [![License](https://img.shields.io/cocoapods/l/ARNPageContainer.svg?style=flat)](http://cocoadocs.org/docsets/ARNPageContainer)
 [![Platform](https://img.shields.io/cocoapods/p/ARNPageContainer.svg?style=flat)](http://cocoadocs.org/docsets/ARNPageContainer)
 
+![capture](capture.gif "capture")
+
 It was inspired by the following products.
 
 * [DAPagesContainer](https://github.com/daria-kopaliani/DAPagesContainer)
@@ -32,4 +34,3 @@ it, simply add the following line to your Podfile:
 ## License
 
 ARNPageContainer is available under the MIT license. See the LICENSE file for more info.
-
