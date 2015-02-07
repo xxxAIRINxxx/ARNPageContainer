@@ -1,12 +1,12 @@
 PODS:
   - ARNLayout (0.1.2)
-  - ARNPageContainer (0.1.4):
+  - ARNPageContainer (0.1.5):
     - ARNLayout
   - Expecta (0.3.1)
-  - Expecta+Snapshots (1.3.0):
+  - Expecta+Snapshots (1.3.1):
     - Expecta
     - FBSnapshotTestCase
-  - FBSnapshotTestCase (1.4)
+  - FBSnapshotTestCase (1.5)
   - Specta (0.2.1)
 
 DEPENDENCIES:
@@ -23,10 +23,10 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   ARNLayout: b0e372557502e414815b20426a1d9c102edd9444
-  ARNPageContainer: 3791ff7c4b3d379a05212a8692ca79edb1d532c3
+  ARNPageContainer: 7c03f0a29fff1137a680124edbbde25d5a6ace96
   Expecta: 03aabd0a89d8dea843baecb19a7fd7466a69a31d
-  Expecta+Snapshots: 0ec8bd543329a3944f5e5dc2a5cb220c3dde4ab0
-  FBSnapshotTestCase: f9f225b5ba11c8d8c09075590490df16314e4d62
+  Expecta+Snapshots: 4a56b9411c6ed156987072e52c39de67d864015a
+  FBSnapshotTestCase: e2914fbaabccea1dcc773d6a16b1c24540642488
   Specta: 9141310f46b1f68b676650ff2854e1ed0b74163a
 
-COCOAPODS: 0.34.4
+COCOAPODS: 0.35.0

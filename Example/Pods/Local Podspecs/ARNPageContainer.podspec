@@ -9,7 +9,7 @@
 
 Pod::Spec.new do |s|
   s.name             = "ARNPageContainer"
-  s.version          = "0.1.4"
+  s.version          = "0.1.5"
   s.summary          = "Horizontal Scroll Paging ViewController Container."
   s.homepage         = "https://github.com/xxxAIRINxxx/ARNPageContainer"
   # s.screenshots     = "www.example.com/screenshots_1", "www.example.com/screenshots_2"
