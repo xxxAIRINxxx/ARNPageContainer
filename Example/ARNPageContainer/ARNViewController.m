@@ -71,11 +71,12 @@
         [pageContainer addVC:controller];
     }
     
-    ARNPageContainerTopTabView *tabView = [[ARNPageContainerTopTabView alloc] init];
-    [pageContainer setTopBarView:tabView];
+    ARNPageContainerTopTabView *tabView = [ARNPageContainerTopTabView new];
+    tabView.font = [UIFont boldSystemFontOfSize:20];
     tabView.backgroundColor = [UIColor darkGrayColor];
-    
+    tabView.itemTitleColor = [UIColor blackColor];
     tabView.itemTitles = [pageContainer headerTitles];
+    [pageContainer setTopBarView:tabView];
     
     __weak typeof(tabView) weakTabView = tabView;
     pageContainer.changeOffsetBlock = ^(UICollectionView *collectionView, NSInteger selectedIndex){
@@ -95,12 +96,7 @@
     };
     
     [pageContainer setSelectedIndex:2 animated:YES];
-}
-
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+    [pageContainer setTopBarHeight:60.0];
 }
 
 @end

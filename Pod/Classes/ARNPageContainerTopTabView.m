@@ -12,16 +12,12 @@
 
 #import "ARNPageContainerTopTabView.h"
 
-#import <ARNLayout.h>
-
-CGFloat const ARNPageContainerTopTabViewItemViewWidth = 100.0f;
 CGFloat const ARNPageContainerTopTabViewItemMargin = 30.0f;
 
 @interface ARNPageContainerTopTabView ()
 
 @property (nonatomic, strong, readwrite) UIScrollView *scrollView;
-
-@property (nonatomic, strong) NSArray *itemViews;
+@property (nonatomic, strong, readwrite) NSArray *itemViews;
 @property (nonatomic, strong) UIImageView *backgroundImageView;
 
 @end
@@ -41,12 +37,12 @@ CGFloat const ARNPageContainerTopTabViewItemMargin = 30.0f;
 
 - (void)settingScrollView
 {
-    self.scrollView = [[UIScrollView alloc] initWithFrame:self.bounds];
+    _scrollView = [[UIScrollView alloc] initWithFrame:self.bounds];
     
-    self.scrollView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    self.scrollView.showsHorizontalScrollIndicator = NO;
+    _scrollView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    _scrollView.showsHorizontalScrollIndicator = NO;
     
-    [self addSubview:self.scrollView];
+    [self addSubview:_scrollView];
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -67,11 +63,14 @@ CGFloat const ARNPageContainerTopTabViewItemMargin = 30.0f;
     return self;
 }
 
-// ------------------------------------------------------------------------------------------------------------------//
 #pragma mark - Public
 
 - (CGPoint)centerForSelectedItemAtIndex:(NSUInteger)index
 {
+    if (self.itemViews.count <= index) {
+        return CGPointZero;
+    }
+    
     CGPoint center = ((UIView *)self.itemViews[index]).center;
     CGPoint offset = [self contentOffsetForSelectedItemAtIndex:index];
     center.x -= offset.x - (CGRectGetMinX(self.scrollView.frame));
@@ -92,9 +91,10 @@ CGFloat const ARNPageContainerTopTabViewItemMargin = 30.0f;
 {
     if (![_itemTitleColor isEqual:itemTitleColor]) {
         _itemTitleColor = itemTitleColor;
-        for (UIButton *button in self.itemViews) {
+        
+        [self.itemViews enumerateObjectsUsingBlock:^(UIButton *button, NSUInteger idx, BOOL *stop) {
             [button setTitleColor:itemTitleColor forState:UIControlStateNormal];
-        }
+        }];
     }
 }
 
@@ -105,11 +105,13 @@ CGFloat const ARNPageContainerTopTabViewItemMargin = 30.0f;
     }
     
     NSMutableArray *mutableItemViews = [NSMutableArray arrayWithCapacity:itemTitles.count];
-    for (NSUInteger i = 0; i < itemTitles.count; i++) {
-        UIButton *itemView = [self addItemView];
-        [itemView setTitle:itemTitles[i] forState:UIControlStateNormal];
-        [mutableItemViews addObject:itemView];
-    }
+    [itemTitles enumerateObjectsUsingBlock:^(NSString *title, NSUInteger idx, BOOL *stop) {
+        if ([title isKindOfClass:[NSString class]]) {
+            UIButton *itemView = [self addItemView];
+            [itemView setTitle:title forState:UIControlStateNormal];
+            [mutableItemViews addObject:itemView];
+        }
+    }];
     self.itemViews = [NSArray arrayWithArray:mutableItemViews];
     
     [self resetButtonTitleColor];
@@ -117,7 +119,6 @@ CGFloat const ARNPageContainerTopTabViewItemMargin = 30.0f;
     [self layoutItemViews];
 }
 
-// ------------------------------------------------------------------------------------------------------------------//
 #pragma mark - Getter,  Setter
 
 - (void)setBackgroundImage:(UIImage *)backgroundImage
@@ -129,9 +130,9 @@ CGFloat const ARNPageContainerTopTabViewItemMargin = 30.0f;
 {
     if (![_font isEqual:font]) {
         _font = font;
-        for (UIButton *itemView in self.itemViews) {
-            [itemView.titleLabel setFont:font];
-        }
+        [self.itemViews enumerateObjectsUsingBlock:^(UIButton *button, NSUInteger idx, BOOL *stop) {
+            [button.titleLabel setFont:font];
+        }];
     }
 }
 
@@ -149,7 +150,6 @@ CGFloat const ARNPageContainerTopTabViewItemMargin = 30.0f;
     [self layoutItemViews];
 }
 
-// ------------------------------------------------------------------------------------------------------------------//
 #pragma mark * Lazy getters
 
 - (UIImageView *)backgroundImageView
@@ -162,33 +162,32 @@ CGFloat const ARNPageContainerTopTabViewItemMargin = 30.0f;
     return _backgroundImageView;
 }
 
-// ------------------------------------------------------------------------------------------------------------------//
 #pragma mark - Private
 
 - (void)cleanup
 {
-    for (UIView *view in self.scrollView.subviews) {
-        [view removeFromSuperview];
-    }
+    [self.itemViews enumerateObjectsUsingBlock:^(UIButton *button, NSUInteger idx, BOOL *stop) {
+        [button removeFromSuperview];
+    }];
+    
     self.itemViews = nil;
 }
 
 - (void)resetButtonTitleColor
 {
-    for (NSUInteger i = 0; i < self.itemViews.count; i++) {
-        UIButton *itemView = self.itemViews[i];
-        if (_selectedIndex == i) {
-            [itemView setTitleColor:self.selectedPageItemTitleColor forState:UIControlStateNormal];
+    [self.itemViews enumerateObjectsUsingBlock:^(UIButton *button, NSUInteger idx, BOOL *stop) {
+        if (_selectedIndex == idx) {
+            [button setTitleColor:self.selectedPageItemTitleColor forState:UIControlStateNormal];
         } else {
-            [itemView setTitleColor:self.itemTitleColor forState:UIControlStateNormal];
+            [button setTitleColor:self.itemTitleColor forState:UIControlStateNormal];
         }
-    }
+    }];
 }
 
 - (UIButton *)addItemView
 {
-    CGRect frame = CGRectMake(0.0f, 0.0f, ARNPageContainerTopTabViewItemViewWidth, CGRectGetHeight(self.frame));
-    UIButton *itemView = [[UIButton alloc] initWithFrame:frame];
+    UIButton *itemView = [[UIButton alloc] initWithFrame:CGRectZero];
+    itemView.autoresizingMask = UIViewAutoresizingFlexibleHeight;
     [itemView addTarget:self action:@selector(itemViewTapped:) forControlEvents:UIControlEventTouchUpInside];
     itemView.titleLabel.font = self.font;
     [itemView setTitleColor:self.itemTitleColor forState:UIControlStateNormal];
@@ -210,13 +209,14 @@ CGFloat const ARNPageContainerTopTabViewItemMargin = 30.0f;
 
 - (void)layoutItemViews
 {
-    CGFloat x = self.itemMargin;
-    for (NSUInteger i = 0; i < self.itemViews.count; i++) {
-        UIButton *button = self.itemViews[i];
+    __block CGFloat x = self.itemMargin;
+    
+    [self.itemViews enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+        UIButton *button = self.itemViews[idx];
         CGFloat width = [button.titleLabel.text sizeWithAttributes:@{NSFontAttributeName:button.titleLabel.font}].width;
         button.frame = CGRectMake(x, 0.0f, width, CGRectGetHeight(self.frame));
         x += width + self.itemMargin;
-    }
+    }];
     
     self.scrollView.contentSize = CGSizeMake(x, CGRectGetHeight(self.scrollView.frame));
     CGRect frame = self.scrollView.frame;
@@ -244,6 +244,7 @@ CGFloat const ARNPageContainerTopTabViewItemMargin = 30.0f;
     CGFloat oldX = selectedIndex * CGRectGetWidth(parentScrollView.frame);
     BOOL scrollingTowards = (parentScrollView.contentOffset.x > oldX);
     NSInteger targetIndex = (scrollingTowards) ? selectedIndex + 1 : selectedIndex - 1;
+    
     if (targetIndex >= 0 && targetIndex < totalVCCount) {
         CGFloat ratio = (parentScrollView.contentOffset.x - oldX) / CGRectGetWidth(parentScrollView.frame);
         CGFloat previousItemContentOffsetX = [self contentOffsetForSelectedItemAtIndex:selectedIndex].x;
@@ -292,6 +293,7 @@ CGFloat const ARNPageContainerTopTabViewItemMargin = 30.0f;
 {
     const CGFloat *components = CGColorGetComponents(color.CGColor);
     CGColorSpaceModel colorSpaceModel = CGColorSpaceGetModel(CGColorGetColorSpace(color.CGColor));
+    
     if (colorSpaceModel == kCGColorSpaceModelRGB && CGColorGetNumberOfComponents(color.CGColor) == 4) {
         *red = components[0];
         *green = components[1];

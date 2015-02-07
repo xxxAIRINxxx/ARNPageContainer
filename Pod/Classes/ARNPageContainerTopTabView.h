@@ -18,6 +18,7 @@
 @property (nonatomic, copy) void (^selectTitleBlock)(NSInteger selectedIndex);
 
 @property (nonatomic, strong, readonly) UIScrollView *scrollView;
+@property (nonatomic, strong, readonly) NSArray *itemViews;
 @property (nonatomic, assign) NSUInteger selectedIndex;
 
 @property (nonatomic, strong) UIColor *itemTitleColor;

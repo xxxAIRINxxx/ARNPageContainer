@@ -46,9 +46,27 @@ CGFloat const ARNPageContainerTopBarDefaultHeight = 44.0f;
 
 - (void)commonInit
 {
-    self.viewControllers = [NSMutableArray array];
+    _viewControllers = [NSMutableArray array];
     
     self.view.translatesAutoresizingMaskIntoConstraints = NO;
+}
+
+- (instancetype)init
+{
+    if (!(self = [super init])) { return nil; }
+    
+    [self commonInit];
+    
+    return self;
+}
+
+- (id)initWithCoder:(NSCoder *)aDecoder
+{
+    if (!(self = [super initWithCoder:aDecoder])) { return nil; }
+    
+    [self commonInit];
+    
+    return self;
 }
 
 - (void)settingTopBarView
@@ -67,7 +85,7 @@ CGFloat const ARNPageContainerTopBarDefaultHeight = 44.0f;
 
 - (void)settingCollectionView
 {
-    UICollectionViewFlowLayout *layout = [[UICollectionViewFlowLayout alloc] init];
+    UICollectionViewFlowLayout *layout = [UICollectionViewFlowLayout new];
     layout.sectionInset = UIEdgeInsetsMake(0, 0, 0, 0);
     layout.minimumInteritemSpacing = 0;
     layout.minimumLineSpacing = 0;
@@ -89,25 +107,6 @@ CGFloat const ARNPageContainerTopBarDefaultHeight = 44.0f;
     self.bottomConstraint = [self.view arn_pinWithView:self.collectionView toView:self.view attribute:NSLayoutAttributeBottom constant:0.0f];
 }
 
-- (instancetype)init
-{
-    if (!(self = [super init])) { return nil; }
-    
-    [self commonInit];
-    
-    return self;
-}
-
-- (id)initWithCoder:(NSCoder *)aDecoder
-{
-    if (!(self = [super initWithCoder:aDecoder])) { return nil; }
-    
-    [self commonInit];
-    
-    return self;
-}
-
-// ------------------------------------------------------------------------------------------------------------------//
 #pragma mark - ViewController Life Cycle
 
 - (void)viewDidLoad
@@ -122,7 +121,6 @@ CGFloat const ARNPageContainerTopBarDefaultHeight = 44.0f;
     [self startObservingContentOffsetForScrollView:self.collectionView];
 }
 
-// ------------------------------------------------------------------------------------------------------------------//
 #pragma mark - Public
 
 - (void)setParentVC:(UIViewController *)controller
@@ -141,11 +139,9 @@ CGFloat const ARNPageContainerTopBarDefaultHeight = 44.0f;
 
 - (void)setTopBarView:(UIView *)topBarView
 {
-    if (self.topBarLayerView.subviews.count) {
-        for (UIView *view in self.topBarLayerView.subviews) {
-            [view removeFromSuperview];
-        }
-    }
+    [self.topBarLayerView.subviews enumerateObjectsUsingBlock:^(UIView *view, NSUInteger idx, BOOL *stop) {
+        [view removeFromSuperview];
+    }];
     
     topBarView.frame = self.topBarLayerView.bounds;
     
@@ -156,6 +152,8 @@ CGFloat const ARNPageContainerTopBarDefaultHeight = 44.0f;
 
 - (void)addControler:(UIViewController *)controller
 {
+    if (!controller) { return; }
+    
     NSUUID *uuid = [NSUUID UUID];
     NSString *uuidString = uuid.UUIDString;
     
@@ -171,12 +169,11 @@ CGFloat const ARNPageContainerTopBarDefaultHeight = 44.0f;
 
 - (void)addVCs:(NSArray *)controllers
 {
-    if (!controllers || !controllers.count) { return; }
-    
-    for (NSUInteger i = 0; i < controllers.count; ++i) {
-        UIViewController *controller = controllers[i];
-        [self addControler:controller];
-    }
+    [controllers enumerateObjectsUsingBlock:^(UIViewController *controller, NSUInteger idx, BOOL *stop) {
+        if ([controller isKindOfClass:[UIViewController class]]) {
+            [self addControler:controller];
+        }
+    }];
 }
 
 - (void)addVC:(UIViewController *)controller
@@ -220,11 +217,11 @@ CGFloat const ARNPageContainerTopBarDefaultHeight = 44.0f;
 {
     NSMutableArray *headerTitles = [NSMutableArray array];
     
-    for (NSUInteger i = 0 ; i < self.viewControllers.count; ++i) {
-        NSDictionary *dict = self.viewControllers[i];
+    [self.viewControllers enumerateObjectsUsingBlock:^(NSDictionary *dict, NSUInteger idx, BOOL *stop) {
         UIViewController *controller = dict[dict.allKeys[0]];
         [headerTitles addObject:controller.title.copy];
-    }
+    }];
+    
     return [NSArray arrayWithArray:headerTitles];
 }
 
@@ -235,7 +232,6 @@ CGFloat const ARNPageContainerTopBarDefaultHeight = 44.0f;
     }
 }
 
-// ------------------------------------------------------------------------------------------------------------------//
 #pragma mark - Getter,  Setter
 
 - (CGFloat)topBarHeight
@@ -283,11 +279,13 @@ CGFloat const ARNPageContainerTopBarDefaultHeight = 44.0f;
     [self.collectionView setNeedsUpdateConstraints];
 }
 
-// ------------------------------------------------------------------------------------------------------------------//
 #pragma mark - KVO
 
 - (void)startObservingContentOffsetForScrollView:(UIScrollView *)scrollView
 {
+    if (!scrollView) { return; }
+    
+    [self stopObservingContentOffset];
     [scrollView addObserver:self forKeyPath:@"contentOffset" options:0 context:nil];
     self.observingScrollView = scrollView;
 }
@@ -314,7 +312,6 @@ CGFloat const ARNPageContainerTopBarDefaultHeight = 44.0f;
     }
 }
 
-// ------------------------------------------------------------------------------------------------------------------//
 #pragma mark - UICollectionView DataSource
 
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView
@@ -342,7 +339,6 @@ CGFloat const ARNPageContainerTopBarDefaultHeight = 44.0f;
     return cell;
 }
 
-// ------------------------------------------------------------------------------------------------------------------//
 #pragma mark - UICollectionView Delegate
 
 - (CGSize)  collectionView:(UICollectionView *)collectionView
@@ -356,7 +352,6 @@ CGFloat const ARNPageContainerTopBarDefaultHeight = 44.0f;
 {
 }
 
-// ------------------------------------------------------------------------------------------------------------------//
 #pragma mark - UIScrollView Delegate
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
