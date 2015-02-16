@@ -25,49 +25,14 @@
     ARNPageContainer *pageContainer = [[ARNPageContainer alloc] init];
     [pageContainer setParentVC:self];
     
-    {
+    for (NSInteger i = 1; i < 6; i ++) {
         UIViewController *controller = [[UIViewController alloc] init];
         controller.view.clipsToBounds = YES;
         UIImageView *imageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"image.JPG"]];
         imageView.contentMode = UIViewContentModeScaleAspectFill;
-        imageView.frame = controller.view.bounds;
         [controller.view addSubview:imageView];
         [controller.view arn_allPinWithSubView:imageView];
-        controller.title = @"controller 1";
-        [pageContainer addVC:controller];
-        
-    }
-    {
-        UIViewController *controller = [[UIViewController alloc] init];
-        controller.view.clipsToBounds = YES;
-        UIImageView *imageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"image.JPG"]];
-        imageView.contentMode = UIViewContentModeScaleAspectFill;
-        imageView.frame = controller.view.bounds;
-        [controller.view addSubview:imageView];
-        [controller.view arn_allPinWithSubView:imageView];
-        controller.title = @"controller 2";
-        [pageContainer addVC:controller];
-    }
-    {
-        UIViewController *controller = [[UIViewController alloc] init];
-        controller.view.clipsToBounds = YES;
-        UIImageView *imageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"image.JPG"]];
-        imageView.contentMode = UIViewContentModeScaleAspectFill;
-        imageView.frame = controller.view.bounds;
-        [controller.view addSubview:imageView];
-        [controller.view arn_allPinWithSubView:imageView];
-        controller.title = @"controller 3";
-        [pageContainer addVC:controller];
-    }
-    {
-        UIViewController *controller = [[UIViewController alloc] init];
-        controller.view.clipsToBounds = YES;
-        UIImageView *imageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"image.JPG"]];
-        imageView.contentMode = UIViewContentModeScaleAspectFill;
-        imageView.frame = controller.view.bounds;
-        [controller.view addSubview:imageView];
-        [controller.view arn_allPinWithSubView:imageView];
-        controller.title = @"controller 4";
+        controller.title = [NSString stringWithFormat:@"Controller %zd", i];
         [pageContainer addVC:controller];
     }
     

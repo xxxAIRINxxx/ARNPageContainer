@@ -40,6 +40,7 @@ CGFloat const ARNPageContainerTopTabViewItemMargin = 30.0f;
     _scrollView = [[UIScrollView alloc] initWithFrame:self.bounds];
     
     _scrollView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    _scrollView.scrollEnabled = NO;
     _scrollView.showsHorizontalScrollIndicator = NO;
     
     [self addSubview:_scrollView];
@@ -258,7 +259,7 @@ CGFloat const ARNPageContainerTopTabViewItemMargin = 30.0f;
         [self getRed:&red green:&green blue:&blue alpha:&alpha fromColor:self.itemTitleColor];
         [self getRed:&highlightedRed green:&highlightedGreen blue:&highlightedBlue alpha:&highlightedAlpha fromColor:self.selectedPageItemTitleColor];
         
-        CGFloat absRatio = fabsf(ratio);
+        CGFloat absRatio = fabs(ratio);
         UIColor *prev = [UIColor colorWithRed:red * absRatio + highlightedRed * (1 - absRatio)
                                         green:green * absRatio + highlightedGreen * (1 - absRatio)
                                          blue:blue * absRatio + highlightedBlue  * (1 - absRatio)

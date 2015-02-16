@@ -25,8 +25,7 @@ Pod::Spec.new do |s|
   s.resource_bundles = {
     'ARNPageContainer' => ['Pod/Assets/*.png']
   }
-
-  # s.public_header_files = 'Pod/Classes/**/*.h'
+  
   # s.frameworks = 'UIKit', 'MapKit'
   s.dependency 'ARNLayout'
 end

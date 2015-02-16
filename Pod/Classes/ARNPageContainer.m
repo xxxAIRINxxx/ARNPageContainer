@@ -113,6 +113,7 @@ CGFloat const ARNPageContainerTopBarDefaultHeight = 44.0f;
 {
     [super viewDidLoad];
     
+    self.automaticallyAdjustsScrollViewInsets = NO;
     self.shouldObserveContentOffset = YES;
     
     [self settingTopBarView];
@@ -143,10 +144,7 @@ CGFloat const ARNPageContainerTopBarDefaultHeight = 44.0f;
         [view removeFromSuperview];
     }];
     
-    topBarView.frame = self.topBarLayerView.bounds;
-    
     [self.topBarLayerView addSubview:topBarView];
-    
     [self.topBarLayerView arn_allPinWithView:topBarView toView:self.topBarLayerView];
 }
 
@@ -188,7 +186,9 @@ CGFloat const ARNPageContainerTopBarDefaultHeight = 44.0f;
     }
     
     __weak typeof(self) weakSelf = self;
-    [self.collectionView performBatchUpdates:^{}
+    [self.collectionView performBatchUpdates:^{
+        [weakSelf.collectionView reloadData];
+    }
                                   completion:
      ^(BOOL finished) {
          [weakSelf.collectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:selectedIndex inSection:0]
@@ -208,6 +208,7 @@ CGFloat const ARNPageContainerTopBarDefaultHeight = 44.0f;
              UIViewController *controller = dict[dict.allKeys[0]];
              weakSelf.changeIndexBlock(controller, selectedIndex);
          }
+         [weakSelf.collectionView.collectionViewLayout invalidateLayout];
      }];
     
     _selectedIndex = selectedIndex;
@@ -346,10 +347,6 @@ CGFloat const ARNPageContainerTopBarDefaultHeight = 44.0f;
     sizeForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     return self.collectionView.frame.size;
-}
-
-- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
-{
 }
 
 #pragma mark - UIScrollView Delegate
